@@ -8,6 +8,7 @@ const connectDB = require("./db");
 const app = express();
 const server = http.createServer(app);
 const UserRoutes = require("./Routes/UserRoutes");
+const productRoutes = require('./Routes/ProductRoutes')
 
 const corsOptions = {
     origin: '*',
@@ -43,4 +44,5 @@ connectDB();
 
 
 app.use('/api/users', UserRoutes);
+app.use('/api/products', productRoutes)
 module.exports = app;
