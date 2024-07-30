@@ -7,7 +7,72 @@ const {uploadToS3} =require("../utility/S3UtilityforImageUpload");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: Create a new product
+ *     tags: [Products]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: name
+ *         type: string
+ *         required: true
+ *       - in: formData
+ *         name: description
+ *         type: string
+ *         required: true
+ *       - in: formData
+ *         name: price
+ *         type: number
+ *         required: true
+ *       - in: formData
+ *         name: category
+ *         type: string
+ *         required: true
+ *       - in: formData
+ *         name: subCategory
+ *         type: string
+ *       - in: formData
+ *         name: stockQuantity
+ *         type: number
+ *         required: true
+ *       - in: formData
+ *         name: size
+ *         type: string
+ *       - in: formData
+ *         name: color
+ *         type: string
+ *       - in: formData
+ *         name: material
+ *         type: string
+ *       - in: formData
+ *         name: isAvailable
+ *         type: boolean
+ *       - in: formData
+ *         name: discountPercentage
+ *         type: number
+ *       - in: formData
+ *         name: tags
+ *         type: array
+ *         items:
+ *           type: string
+ *       - in: formData
+ *         name: images
+ *         type: array
+ *         items:
+ *           type: file
+ *         collectionFormat: multi
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Error creating product
+ */
 router.post('/', upload.array('images', 5), async (req, res) => {
   try {
     const {
@@ -316,6 +381,78 @@ router.get('/category/:category', async (req, res) => {
     } catch (error) {
       console.error('Error fetching new arrivals:', error);
       res.status(500).json({ message: 'Error fetching new arrivals', error: error.message });
+    }
+  });
+
+  router.get('/carousel', async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1; 
+      const limit = parseInt(req.query.limit) || 10; 
+      const sortBy = req.query.sortBy || 'createdAt'; 
+      const order = req.query.order === 'asc' ? 1 : -1; 
+      const search = req.query.search || ''; 
+  
+      const query = { carousel: true };
+      if (search) {
+        query.$text = { $search: search };
+      }
+  
+      const options = {
+        page: page,
+        limit: limit,
+        sort: { [sortBy]: order },
+        collation: { locale: 'en' }
+      };
+  
+      const result = await Product.paginate(query, options);
+  
+      res.json({
+        products: result.docs,
+        currentPage: result.page,
+        totalPages: result.totalPages,
+        totalProducts: result.totalDocs,
+        hasNextPage: result.hasNextPage,
+        hasPrevPage: result.hasPrevPage
+      });
+    } catch (error) {
+      console.error('Error fetching carousel products:', error);
+      res.status(500).json({ message: 'Error fetching carousel products', error: error.message });
+    }
+  });
+
+  router.get('/most-selling', async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1; 
+      const limit = parseInt(req.query.limit) || 10; 
+      const sortBy = req.query.sortBy || 'createdAt'; 
+      const order = req.query.order === 'asc' ? 1 : -1; 
+      const search = req.query.search || ''; 
+  
+      const query = { most_selling_product: true };
+      if (search) {
+        query.$text = { $search: search };
+      }
+  
+      const options = {
+        page: page,
+        limit: limit,
+        sort: { [sortBy]: order },
+        collation: { locale: 'en' }
+      };
+  
+      const result = await Product.paginate(query, options);
+  
+      res.json({
+        products: result.docs,
+        currentPage: result.page,
+        totalPages: result.totalPages,
+        totalProducts: result.totalDocs,
+        hasNextPage: result.hasNextPage,
+        hasPrevPage: result.hasPrevPage
+      });
+    } catch (error) {
+      console.error('Error fetching most selling products:', error);
+      res.status(500).json({ message: 'Error fetching most selling products', error: error.message });
     }
   });
   

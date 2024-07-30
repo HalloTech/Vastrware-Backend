@@ -9,6 +9,8 @@ const app = express();
 const server = http.createServer(app);
 const UserRoutes = require("./Routes/UserRoutes");
 const productRoutes = require('./Routes/ProductRoutes')
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const corsOptions = {
     origin: '*',
@@ -41,8 +43,31 @@ app.use(cookieParser());
 
 
 connectDB();
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Your API',
+      version: '1.0.0',
+      description: 'Your API Description',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3001',
+        description: 'Development server',
+      },
+    ],
+  },
+  apis: ['./Routes/*.js'], // Path to the API docs
+};
 
+const specs = swaggerJsdoc(options);
 
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(specs, { explorer: true }));
 app.use('/api/users', UserRoutes);
 app.use('/api/products', productRoutes)
+
+
+
 module.exports = app;
