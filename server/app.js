@@ -9,6 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const UserRoutes = require("./Routes/UserRoutes");
 const productRoutes = require('./Routes/ProductRoutes')
+const cartRoutes = require('./Routes/CartRoutes');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -67,6 +68,7 @@ app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', swaggerUi.setup(specs, { explorer: true }));
 app.use('/api/users', UserRoutes);
 app.use('/api/products', productRoutes)
+app.use('/api/cart' , cartRoutes);
 
 
 
