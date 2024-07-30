@@ -111,10 +111,6 @@ const productSchema = new mongoose.Schema({
     type: String,
     trim: true
   }],
-  material: {
-    type: String,
-    trim: true
-  },
   isAvailable: {
     type: Boolean,
     default: true

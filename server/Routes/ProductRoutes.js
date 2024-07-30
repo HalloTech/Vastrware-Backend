@@ -84,7 +84,6 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       stockQuantity,
       size,
       color,
-      material,
       isAvailable,
       discountPercentage,
       tags,
