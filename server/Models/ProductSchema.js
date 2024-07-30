@@ -103,14 +103,14 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  size: {
+  availableSizes: [{
     type: String,
     trim: true
-  },
-  color: {
+  }],
+  availableColors: [{
     type: String,
     trim: true
-  },
+  }],
   material: {
     type: String,
     trim: true
