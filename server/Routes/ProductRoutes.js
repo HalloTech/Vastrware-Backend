@@ -75,7 +75,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  */
 router.post('/', upload.array('images', 5), async (req, res) => {
   try {
-    const {
+    let {
       name,
       description,
       price,
@@ -85,37 +85,59 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       isAvailable,
       discountPercentage,
       tags,
+      availableSizesColors,
       ...otherDetails
     } = req.body;
 
-    // Basic validation
+   
+
     if (!name || !description || !price || !category || !stockQuantity) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Handle image uploads
+    if (typeof availableSizesColors === 'string') {
+      try {
+        availableSizesColors = JSON.parse(availableSizesColors);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid availableSizesColors format' });
+      }
+    }
+    console.log('Received parsedavailableSizesColors:', availableSizesColors);
+
+    if (!Array.isArray(availableSizesColors)) {
+      return res.status(400).json({ message: 'availableSizesColors must be an array' });
+    }
+
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
       const uploadPromises = req.files.map(file => uploadToS3(file));
       imageUrls = await Promise.all(uploadPromises);
     }
 
+    if (typeof tags === 'string') {
+      try {
+        tags = JSON.parse(tags);
+      } catch (error) {
+        tags = tags.split(',').map(tag => tag.trim());
+      }
+    }
+
     // Create a new product instance
     const newProduct = new Product({
       name,
       description,
-      price,
+      price: Number(price),
       category,
       subCategory,
       images: imageUrls,
-      stockQuantity,
-      isAvailable,
-      discountPercentage,
-      tags,
+      stockQuantity: Number(stockQuantity),
+      isAvailable: isAvailable === 'true',
+      discountPercentage: Number(discountPercentage),
+      tags: Array.isArray(tags) ? tags : [],
+      availableSizesColors,
       ...otherDetails
     });
 
-    // Save the product to the database
     const savedProduct = await newProduct.save();
 
     res.status(201).json({
