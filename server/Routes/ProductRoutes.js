@@ -73,7 +73,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       500:
  *         description: Error creating product
  */
-router.post('/', upload.array('images', 5), async (req, res) => {
+router.post('/', upload.array('images', 6), async (req, res) => {
   try {
     let {
       name,
@@ -265,7 +265,7 @@ router.get('/category/:category', async (req, res) => {
     }
   });
 
-  router.put('/update/:id', upload.array('images', 5), async (req, res) => {
+  router.put('/update/:id', upload.array('images', 6), async (req, res) => {
     try {
       const { id } = req.params;
       const { name, ...updateData } = req.body;
