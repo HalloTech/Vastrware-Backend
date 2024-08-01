@@ -38,6 +38,10 @@ const productSchema = new mongoose.Schema({
       type: String,
       trim: true
     },
+    dimensions: {
+      type: String,
+      trim: true
+    },
     colors: [{
       color: {
         type: String,
@@ -75,8 +79,7 @@ const productSchema = new mongoose.Schema({
   },
   product_specification: {
     material: { type: String },
-    careInstruction: { type: String },
-    dimensions: { type: String },
+    careInstruction: { type: String }
   },
 });
 

@@ -89,6 +89,9 @@ router.post('/', upload.array('images[]', 6), async (req, res) => {
       ...otherDetails
     } = JSON.parse(req.body.data);
 
+
+   
+
     if (!name || !description || !price || !category || !stockQuantity) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
