@@ -188,6 +188,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    res.json(product);
+  } catch (error) {
+    console.error('Error fetching product by ID:', error);
+    res.status(500).json({ message: 'Error fetching product', error: error.message });
+  }
+});
+
+module.exports = router;
 
 router.get('/category/:category', async (req, res) => {
     try {
