@@ -132,7 +132,7 @@ router.post('/', upload.array('images[]', 6), async (req, res) => {
       subCategory,
       images: imageUrls,
       stockQuantity: Number(stockQuantity),
-      isAvailable: isAvailable === 'true',
+      isAvailable: isAvailable === true,
       discountPercentage: Number(discountPercentage),
       tags: Array.isArray(tags) ? tags : [],
       availableSizesColors,

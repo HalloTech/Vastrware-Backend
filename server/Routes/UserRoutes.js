@@ -32,7 +32,8 @@ router.post('/signup',
         password,
         username,  
         confirmPassword,
-        role: email === 'admin@example.com' ? 'admin' : 'customer'
+        // role: email === 'admin@example.com' ? 'admin' : 'customer'
+        role:email=='aslam@aslam.com'?'admin':'customer'
       });
 
       await user.save();
