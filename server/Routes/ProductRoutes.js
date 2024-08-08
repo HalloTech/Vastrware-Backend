@@ -98,9 +98,7 @@ router.post('/', upload.array('images[]', 6), async (req, res) => {
 
     if (typeof availableSizesColors === 'string') {
       try {
-        availableSizesColors = JSON.parse(availableSizesColors).map((item)=>{
-          return {size:item.size,colors:JSON.parse(item.colors)}
-        });
+        availableSizesColors = JSON.parse(availableSizesColors);
       } catch (error) {
         return res.status(400).json({ message: 'Invalid availableSizesColors format' });
       }
@@ -134,7 +132,7 @@ router.post('/', upload.array('images[]', 6), async (req, res) => {
       subCategory,
       images: imageUrls,
       stockQuantity: Number(stockQuantity),
-      isAvailable: isAvailable === 'true',
+      isAvailable: isAvailable === true,
       discountPercentage: Number(discountPercentage),
       tags: Array.isArray(tags) ? tags : [],
       availableSizesColors,
