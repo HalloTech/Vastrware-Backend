@@ -63,6 +63,7 @@ const options = {
 };
 
 const specs = swaggerJsdoc(options);
+require('./Config/passport')(app);
 
 app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', swaggerUi.setup(specs, { explorer: true }));

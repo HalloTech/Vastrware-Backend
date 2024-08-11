@@ -55,14 +55,14 @@ router.post('/signup',
 );
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "700m" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10d" });
 }
 
 
 let refreshTokens = [];
 
 function generateRefreshToken(user) {
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "900m" });
+  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "10d" });
   refreshTokens.push(refreshToken);
   return refreshToken;
 }
