@@ -154,7 +154,42 @@ router.post('/', auth ,  role.check('admin,Admin') , upload.array('images[]', 6)
   }
 });
 
+router.get('/search', async (req, res) => {
+  try {
+    const { category, query, page = 1, limit = 10 } = req.query;
+    let filter = {};
 
+    if (category) {
+      filter.category = category;
+    }
+
+    if (query) {
+      filter.$text = { $search: query };
+    }
+
+    if (!category && !query) {
+      return res.status(400).json({ message: 'Please provide either category or query parameter' });
+    }
+
+    const options = {
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+      sort: { createdAt: -1 } 
+    };
+
+    const result = await Product.paginate(filter, options);
+
+    res.json({
+      products: result.docs,
+      currentPage: result.page,
+      totalPages: result.totalPages,
+      totalProducts: result.totalDocs
+    });
+  } catch (error) {
+    console.error('Error in product search:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 router.get('/'  , auth  ,    async (req, res) => {
   try {
@@ -252,39 +287,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
     }
   });
 
-  router.get('/search',auth ,  async (req, res) => {
-    try {
-      const { query, page = 1, limit = 10 } = req.query;
-      
-      const searchQuery = {
-        $or: [
-          { name: { $regex: query, $options: 'i' } },
-          { description: { $regex: query, $options: 'i' } },
-          { category: { $regex: query, $options: 'i' } },
-          { subCategory: { $regex: query, $options: 'i' } }
-        ]
-      };
-  
-      const options = {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        select: 'name category subCategory price stockQuantity', // Limit fields for brevity
-        sort: { createdAt: -1 }
-      };
-  
-      const result = await Product.paginate(searchQuery, options);
-  
-      res.json({
-        products: result.docs,
-        currentPage: result.page,
-        totalPages: result.totalPages,
-        totalProducts: result.totalDocs
-      });
-    } catch (error) {
-      console.error('Error searching products:', error);
-      res.status(500).json({ message: 'Error searching products', error: error.message });
-    }
-  });
+
 
   router.put('/update/:id',auth , role.check('admin,Admin')  ,  upload.array('images', 6), async (req, res) => {
     try {
