@@ -42,16 +42,15 @@ const productSchema = new mongoose.Schema({
       type: String,
       trim: true
     },
-    colors: [{
-      color: {
-        type: String,
-        trim: true
-      },
-      combination_price: {
-        type: Number,
-        min: 0
-      }
-    }]
+    stockQuantity: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    combination_price: {
+      type: Number,
+      min: 0
+    }
   }],
   isAvailable: {
     type: Boolean,
