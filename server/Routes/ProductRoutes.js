@@ -76,7 +76,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       500:
  *         description: Error creating product
  */
-router.post('/', auth ,  role.check('admin,Admin') , upload.array('images[]', 6), async (req, res) => {
+router.post('/' , upload.array('images[]', 6), async (req, res) => {
   try {
     let {
       name,
@@ -191,7 +191,7 @@ router.get('/search', async (req, res) => {
   }
 });
 
-router.get('/'  , auth  ,    async (req, res) => {
+router.get('/'    ,    async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; 
     const limit = parseInt(req.query.limit) || 10; 
@@ -226,7 +226,7 @@ router.get('/'  , auth  ,    async (req, res) => {
   }
 });
 
-router.get('/:id',auth ,  async (req, res) => {
+router.get('/:id' ,  async (req, res) => {
   try {
     const id = req.params.id;
     
@@ -244,7 +244,7 @@ router.get('/:id',auth ,  async (req, res) => {
 });
 
 
-router.get('/category/:category',auth ,  async (req, res) => {
+router.get('/category/:category' ,  async (req, res) => {
     try {
       const { category } = req.params;
       const page = parseInt(req.query.page) || 1;
@@ -289,7 +289,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
 
 
 
-  router.put('/update/:id',auth , role.check('admin,Admin')  ,  upload.array('images', 6), async (req, res) => {
+  router.put('/update/:id' , role.check('admin,Admin')  ,  upload.array('images', 6), async (req, res) => {
     try {
       const { id } = req.params;
       const { name, ...updateData } = req.body;
@@ -334,7 +334,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
     }
   });
 
-  router.patch('/deactivate/:id',auth ,  async (req, res) => {
+  router.patch('/deactivate/:id' ,  async (req, res) => {
     try {
       const { id } = req.params;
   
@@ -363,7 +363,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
     }
   });
 
-  router.get('/tags/:tag',auth ,  async (req, res) => {
+  router.get('/tags/:tag' ,  async (req, res) => {
     try {
       const { tag } = req.params;
       const page = parseInt(req.query.page) || 1;
@@ -380,7 +380,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
     }
   });
 
-  router.patch('/bulk-update',auth ,  async (req, res) => {
+  router.patch('/bulk-update' ,  async (req, res) => {
     try {
       const updates = req.body; // Expecting an array of update objects with product ID and fields to update
   
@@ -409,7 +409,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
   });
   
 
-  router.get('/new-arrivals',auth ,  async (req, res) => {
+  router.get('/new-arrivals' ,  async (req, res) => {
     try {
       const limit = parseInt(req.query.limit) || 10;
   
@@ -424,7 +424,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
     }
   });
 
-  router.get('/carousel',auth ,  async (req, res) => {
+  router.get('/carousel' ,  async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1; 
       const limit = parseInt(req.query.limit) || 10; 
@@ -460,7 +460,7 @@ router.get('/category/:category',auth ,  async (req, res) => {
     }
   });
 
-  router.get('/most-selling',auth ,  async (req, res) => {
+  router.get('/most-selling' ,  async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1; 
       const limit = parseInt(req.query.limit) || 10; 
