@@ -301,27 +301,33 @@ router.get('/category/:category' ,  async (req, res) => {
 
 
 
-  router.put('/update/:id' , role.check('admin,Admin')  ,  upload.array('images', 6), async (req, res) => {
+  router.put('/update/:id', upload.array('images', 6), async (req, res) => {
     try {
       const { id } = req.params;
       const { name, ...updateData } = req.body;
   
-      // Log request body and files for debugging
-      console.log('Request Body:', req.body);
-      console.log('Files:', req.files);
+
   
       if (!id) {
         return res.status(400).json({ message: 'Product ID is required for updating' });
       }
   
-      // Handle image uploads separately if they are provided
+      let imageUrls = [];
+      let thumbnail;
       if (req.files && req.files.length > 0) {
-        const uploadPromises = req.files.map(file => uploadToS3(file));
-        const imageUrls = await Promise.all(uploadPromises);
+        const uploadPromises = req.files.map(async (file) => {
+          if (file.originalname !== 'thumbnail') {
+            return uploadToS3(file);
+          }
+          thumbnail = await uploadToS3(file);
+          return null;
+        });
+        imageUrls = await Promise.all(uploadPromises);
+        imageUrls = imageUrls.filter((item) => item !== null);
         updateData.images = imageUrls;
+        updateData.thumbnail = thumbnail;
       }
   
-      // Find the product by ID and update it
       const updatedProduct = await Product.findByIdAndUpdate(
         id,
         { $set: updateData },
@@ -332,7 +338,6 @@ router.get('/category/:category' ,  async (req, res) => {
         return res.status(404).json({ message: 'Product not found' });
       }
   
-      // Send the updated product in the response
       res.json({
         message: 'Product updated successfully',
         product: updatedProduct
@@ -345,6 +350,7 @@ router.get('/category/:category' ,  async (req, res) => {
       res.status(500).json({ message: 'Error updating product', error: error.message });
     }
   });
+  
 
   router.patch('/deactivate/:id' ,  async (req, res) => {
     try {
