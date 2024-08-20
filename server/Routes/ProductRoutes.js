@@ -113,10 +113,21 @@ router.post('/' , upload.array('images[]', 6), async (req, res) => {
     }
 
     let imageUrls = [];
+    let thumbnail
     if (req.files && req.files.length > 0) {
-      const uploadPromises = req.files.map(file => uploadToS3(file));
-      imageUrls = await Promise.all(uploadPromises);
+      const uploadPromises = req.files.map(async(file) => {
+        if(file.originalname!='thumbnail'){
+          return uploadToS3(file)
+        }
+        thumbnail=await uploadToS3(file)
+        return null
+      });
+      imageUrls = await Promise.all(uploadPromises)
+      imageUrls=imageUrls.filter((item)=>item!==null);
     }
+
+    // console.log('THUMBNAIL',thumbnail)
+    // console.log('IMG URL',imageUrls)
 
     if (typeof tags === 'string') {
       try {
@@ -134,6 +145,7 @@ router.post('/' , upload.array('images[]', 6), async (req, res) => {
       category,
       subCategory,
       images: imageUrls,
+      thumbnail:thumbnail,
       stockQuantity: Number(stockQuantity),
       isAvailable: isAvailable === true,
       discountPercentage: Number(discountPercentage),
