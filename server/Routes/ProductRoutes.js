@@ -76,7 +76,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       500:
  *         description: Error creating product
  */
-router.post('/' , upload.array('images[]', 6), async (req, res) => {
+router.post('/' , upload.array('images[]', 7), async (req, res) => {
   try {
     let {
       name,
@@ -301,16 +301,33 @@ router.get('/category/:category' ,  async (req, res) => {
 
 
 
-  router.put('/update/:id', upload.array('images', 6), async (req, res) => {
+  router.put('/update/:id', upload.array('images[]', 7), async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, ...updateData } = req.body;
-  
+      const {  ...updateData } = JSON.parse(req.body.data);
 
+      let availableSizesColors=updateData.availableSizesColors
+  
+      // console.log(309,updateData)
   
       if (!id) {
         return res.status(400).json({ message: 'Product ID is required for updating' });
       }
+
+      if (typeof availableSizesColors === 'string') {
+        try {
+          availableSizesColors = JSON.parse(availableSizesColors);
+        } catch (error) {
+          return res.status(400).json({ message: 'Invalid availableSizesColors format' });
+        }
+      }
+      // console.log('Received parsedavailableSizesColors:', availableSizesColors);
+  
+      if (!Array.isArray(availableSizesColors)) {
+        return res.status(400).json({ message: 'availableSizesColors must be an array' });
+      }
+
+      updateData.availableSizesColors=availableSizesColors
   
       let imageUrls = [];
       let thumbnail;
@@ -324,8 +341,10 @@ router.get('/category/:category' ,  async (req, res) => {
         });
         imageUrls = await Promise.all(uploadPromises);
         imageUrls = imageUrls.filter((item) => item !== null);
-        updateData.images = imageUrls;
-        updateData.thumbnail = thumbnail;
+        updateData.images = [...updateData.prevImgs,...imageUrls];
+        if(thumbnail){
+          updateData.thumbnail = thumbnail;
+        }
       }
   
       const updatedProduct = await Product.findByIdAndUpdate(
