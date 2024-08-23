@@ -513,6 +513,25 @@ router.get('/category/:category' ,  async (req, res) => {
       res.status(500).json({ message: 'Error fetching most selling products', error: error.message });
     }
   });
+
+  router.delete(
+    '/delete/:id',
+    async (req, res) => {
+      try {
+        const product = await Product.deleteOne({ _id: req.params.id });
+  
+        res.status(200).json({
+          success: true,
+          message: `Product has been deleted successfully!`,
+          product
+        });
+      } catch (error) {
+        res.status(400).json({
+          error: 'Your request could not be processed. Please try again.'
+        });
+      }
+    }
+  );
   
   
   

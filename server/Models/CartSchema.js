@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { CART_ITEM_STATUS } = require('../constants');
 
 const CartItemSchema = new mongoose.Schema({
   product: {
@@ -15,7 +15,35 @@ const CartItemSchema = new mongoose.Schema({
   size: {
     type: String,
     // required: true
+  } , 
+  purchasePrice: {
+    type: Number,
+    default: 0
+  },
+  totalPrice: {
+    type: Number,
+    default: 0
+  },
+  priceWithTax: {
+    type: Number,
+    default: 0
+  },
+  totalTax: {
+    type: Number,
+    default: 0
+  },
+  status: {
+    type: String,
+    default: CART_ITEM_STATUS.Not_processed,
+    enum: [
+      CART_ITEM_STATUS.Not_processed,
+      CART_ITEM_STATUS.Processing,
+      CART_ITEM_STATUS.Shipped,
+      CART_ITEM_STATUS.Delivered,
+      CART_ITEM_STATUS.Cancelled
+    ]
   }
+
 });
 
 const CartSchema = new mongoose.Schema({
@@ -24,7 +52,7 @@ const CartSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  items: [CartItemSchema],
+  products: [CartItemSchema],
   createdAt: {
     type: Date,
     default: Date.now
