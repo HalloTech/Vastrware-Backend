@@ -5,7 +5,7 @@ const auth = require('../MiddleWare/auth');
 
 router.get('/:userId' ,  async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.params.userId }).populate('items.product');
+    const cart = await Cart.findOne({ user: req.params.userId }).populate('products.product');
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
@@ -52,8 +52,9 @@ router.post('/:userId/add', async (req, res) => {
     console.log(cart)
     cart.updatedAt = Date.now();
     await cart.save();
+    const result=await cart.populate('products.product')
 
-    res.json(cart);
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
