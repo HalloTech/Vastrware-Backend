@@ -28,7 +28,7 @@ router.post('/:userId/add', async (req, res) => {
 
     if (existingItem) {
       // Update existing item quantity
-      existingItem.quantity += quantity;
+      existingItem.quantity = quantity;
       // Update other fields if needed
       existingItem.size = size;
       existingItem.purchasePrice = purchasePrice;
@@ -49,7 +49,7 @@ router.post('/:userId/add', async (req, res) => {
         status
       });
     }
-    console.log(cart)
+    // console.log(cart)
     cart.updatedAt = Date.now();
     await cart.save();
     const result=await cart.populate('products.product')
@@ -93,10 +93,11 @@ router.delete('/:userId/remove/:productId' ,  async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    cart.items = cart.items.filter(item => item.product.toString() !== req.params.productId);
+    cart.products = cart.products.filter(item => item.product.toString() !== req.params.productId);
     cart.updatedAt = Date.now();
     await cart.save();
-    res.json(cart);
+    const result=await cart.populate('products.product')
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
